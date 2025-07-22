@@ -18,31 +18,9 @@ namespace AwesomeProject.Projects.Infrastructure.Repositories
 			return Collection.Find(x => x.UserId == userId).ToListAsync();
 		}
 
-		public async Task<MostUsedIndicatorsModel> GetMostUsedIndicatorsBySubscription(int[] userIds, int limit)
+		public Task<List<Project>> GetByUserIdsAsync(int[] userIds)
 		{
-			var pipeline = new BsonDocument[]
-			{
-				new BsonDocument("$match", new BsonDocument("userId", new BsonDocument("$in", new BsonArray(userIds)))),
-				new BsonDocument("$unwind", "$charts"),
-				new BsonDocument("$unwind", "$charts.indicators"),
-				new BsonDocument("$group", new BsonDocument
-				{
-					{ "_id", "$charts.indicators.name" },
-					{ "count", new BsonDocument("$sum", 1) }
-				}),
-				new BsonDocument("$sort", new BsonDocument("count", -1)),
-				new BsonDocument("$limit", limit)
-			};
-
-			var result = await Collection.Aggregate<BsonDocument>(pipeline).ToListAsync();
-
-			var mapped = result.Select(d => new MostUsedIndicator
-			{
-				Name = d["_id"].AsString,
-				Used = d["count"].AsInt32
-			}).ToList();
-
-			return new MostUsedIndicatorsModel { Indicators = mapped };
+			return Collection.Find(x => userIds.Contains( x.UserId)).ToListAsync();
 		}
 	}
 }

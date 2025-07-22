@@ -18,6 +18,11 @@ namespace AwesomeProject.Users.Infrastructure.Repositories
 				.ToArrayAsync();
 		}
 
+		public Task<User?> GetByEmailAsync(string email)
+		{
+			return DbSet.FirstOrDefaultAsync(u => u.Email == email);
+		}
+
 		protected override IQueryable<User> SelectAllQueryBase => 
 			base.SelectAllQueryBase
 			.Include(u => u.Subscription);

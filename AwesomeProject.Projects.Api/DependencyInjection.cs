@@ -28,7 +28,7 @@ namespace AwesomeProject.Users.Api
 			services.AddScoped<IUserSettingsRepository, UserSettingsRepository>();
 			services.AddScoped<IProjectRepository, ProjectRepository>();
 			services.AddScoped<IUserApiService, UserApiService>();
-			
+			services.AddScoped<IMetricsService, MetricsService>();
 			return services;
 		}
 		public static IServiceCollection RegisterApplicationLayer(this IServiceCollection services, IConfiguration configuration)

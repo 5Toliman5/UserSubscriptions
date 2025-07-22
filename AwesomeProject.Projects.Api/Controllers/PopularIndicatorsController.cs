@@ -10,10 +10,12 @@ namespace AwesomeProject.Projects.Api.Controllers
 		public async Task<IActionResult> GetSymbols(string sybscriptionType, [FromServices] IMetricsService service)
 		{
 			var result = await service.GetMostUsedIndicatorsBySubscription(sybscriptionType);
-			if (result is null)
-				return NotFound();
+			if (!result.Successful)
+			{
+				return GetFailureResult(result);
+			}
 
-			return Ok(result);
+			return Ok(result.Data);
 		}
 	}
 }

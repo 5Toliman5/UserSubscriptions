@@ -18,7 +18,7 @@ namespace AwesomeProject.Projects.Api.Controllers
 		}
 
 		[HttpGet("{id}")]
-		public async Task<ActionResult<ProjectViewModel>> GetById(string id)
+		public async Task<IActionResult> GetById(string id)
 		{
 			var result = await _projectService.GetByIdAsync(id);
 			if (result == null)
@@ -28,29 +28,29 @@ namespace AwesomeProject.Projects.Api.Controllers
 		}
 
 		[HttpGet("user/{userId:int}")]
-		public async Task<ActionResult<List<ProjectViewModel>>> GetByUserId(int userId)
+		public async Task<IActionResult> GetByUserId(int userId)
 		{
 			var result = await _projectService.GetByUserIdAsync(userId);
 			return Ok(result);
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> Create(ProjectModel model)
+		public async Task<IActionResult> Create(ProjectModel request)
 		{
-			var checkUserResult = await _userApiService.CheckIfUserExists(model.UserId);
+			var checkUserResult = await _userApiService.CheckIfUserExists(request.UserId);
 			if (!checkUserResult.Successful)
 			{
 				return GetFailureResult(checkUserResult);
 			}
 
-			await _projectService.CreateAsync(model);
+			await _projectService.CreateAsync(request);
 			return Created();
 		}
 
 		[HttpPut]
-		public async Task<IActionResult> Update(ProjectEditModel model)
+		public async Task<IActionResult> Update(ProjectEditModel request)
 		{
-			await _projectService.UpdateAsync(model);
+			await _projectService.UpdateAsync(request);
 			return NoContent();
 		}
 

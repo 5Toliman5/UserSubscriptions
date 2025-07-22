@@ -36,7 +36,7 @@ namespace AwesomeProject.Users.Api.Controllers
 				return GetFailureResult(result);
 			}
 
-			return Ok();
+			return Ok(result.Data);
 		}
 	}
 }

@@ -5,7 +5,7 @@
 		public List<MostUsedIndicator> Indicators { get; set; }
 	}
 
-	public class  MostUsedIndicator
+	public class MostUsedIndicator
 	{
 		public string Name { get; set; }
 

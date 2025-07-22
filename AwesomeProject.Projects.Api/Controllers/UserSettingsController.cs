@@ -11,6 +11,7 @@ namespace AwesomeProject.Projects.Api.Controllers
 	{
 		private readonly IUserSettingsService _userSettingsService;
 		private readonly IUserApiService _userApiService;
+
 		public UserSettingsController(IUserSettingsService userSettingsService, IUserApiService userApiService)
 		{
 			_userSettingsService = userSettingsService;
@@ -18,7 +19,7 @@ namespace AwesomeProject.Projects.Api.Controllers
 		}
 
 		[HttpGet("{userId:int}")]
-		public async Task<ActionResult<UserSettingsViewModel>> GetByUserId(int userId)
+		public async Task<IActionResult> GetByUserId(int userId)
 		{
 			var result = await _userSettingsService.GetByUserIdAsync(userId);
 			if (result is null)
@@ -28,33 +29,33 @@ namespace AwesomeProject.Projects.Api.Controllers
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> Create(UserSettingsModel model)
+		public async Task<IActionResult> Create(UserSettingsModel request)
 		{
-			var checkUserResult = await _userApiService.CheckIfUserExists(model.UserId);
+			var checkUserResult = await _userApiService.CheckIfUserExists(request.UserId);
 			if (!checkUserResult.Successful)
 			{
 				return GetFailureResult(checkUserResult);
 			}
 
-			var createResult = await _userSettingsService.CreateAsync(model);
+			var createResult = await _userSettingsService.CreateAsync(request);
 			if (!createResult.Successful)
 			{
 				return GetFailureResult(createResult);
 			}
 
-			return CreatedAtAction(nameof(GetByUserId), new { userId = model.UserId }, model);
+			return Created();
 		}
 
 		[HttpPut]
-		public async Task<IActionResult> Update(UserSettingsEditModel model)
+		public async Task<IActionResult> Update(UserSettingsEditModel request)
 		{
-			var checkUserResult = await _userApiService.CheckIfUserExists(model.UserId);
+			var checkUserResult = await _userApiService.CheckIfUserExists(request.UserId);
 			if (!checkUserResult.Successful)
 			{
 				return GetFailureResult(checkUserResult);
 			}
 
-			await _userSettingsService.UpdateAsync(model);
+			await _userSettingsService.UpdateAsync(request);
 			return NoContent();
 		}
 	}

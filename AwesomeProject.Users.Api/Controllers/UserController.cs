@@ -30,13 +30,19 @@ namespace AwesomeProject.Users.Api.Controllers
 				return GetFailureResult(result);
 			}
 
-			return Ok();
+			return Ok(result.Data);
 		}
 
 		[HttpPost]
 		public async Task<IActionResult> Add(UserAddModel request)
 		{
-			return Ok(await _service.AddAsync(request));
+			var result = await _service.AddAsync(request);
+			if (!result.Successful)
+			{
+				return GetFailureResult(result);
+			}
+
+			return Ok(result.Data);
 		}
 
 		[HttpPatch]

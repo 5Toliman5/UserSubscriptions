@@ -13,7 +13,6 @@ namespace AwesomeProject.Projects.Application.Services
 
 	public class MetricsService : IMetricsService
 	{
-		private const int MostUsedIndicatorsLimit = 3;
 		private readonly IUserApiClient _userApiClient;
 		private readonly IProjectRepository _projectRepository;
 
@@ -25,7 +24,7 @@ namespace AwesomeProject.Projects.Application.Services
 
 		public async Task<Result<MostUsedIndicatorsModel>> GetMostUsedIndicatorsBySubscription(string subscriptionType)
 		{
-			var getUsersResult = await _userApiClient.GetUserIdsBySubscriptionType("Super");
+			var getUsersResult = await _userApiClient.GetUserIdsBySubscriptionType(subscriptionType.ToLower());
 			if (!getUsersResult.Successful)
 				return Result<MostUsedIndicatorsModel>.Failure(getUsersResult);
 
@@ -33,7 +32,18 @@ namespace AwesomeProject.Projects.Application.Services
 			if (userIds.IsNullOrEmpty())
 				return Result<MostUsedIndicatorsModel>.Failure(ResultErrorType.NotFound, "No users found with the specified subscription type.");
 
-			return Result<MostUsedIndicatorsModel>.Success(await _projectRepository.GetMostUsedIndicatorsBySubscription(userIds, MostUsedIndicatorsLimit));
+			var projects = await _projectRepository.GetByUserIdsAsync(userIds);
+
+			var top3Indicators = projects
+				.SelectMany(p => p.Charts)
+				.SelectMany(c => c.Indicators)
+				.GroupBy(i => i.Name)
+				.Select(g => new MostUsedIndicator { Name = g.Key, Used = g.Count() })
+				.OrderByDescending(x => x.Used)
+				.Take(Constants.MostUsedIndicatorsLimit)
+				.ToList();
+
+			return Result<MostUsedIndicatorsModel>.Success(new MostUsedIndicatorsModel() { Indicators = top3Indicators });
 		}
 	}
 }

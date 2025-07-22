@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  projects-api:
+    volumes:
+      - ./AwesomeProject.Projects.Api:/app
+    environment:
+      - DOTNET_USE_POLLING_FILE_WATCHER=1
+    ports:
+      - "5001:80"
+
+  users-api:
+    volumes:
+      - ./AwesomeProject.Users.Api:/app
+    environment:
+      - DOTNET_USE_POLLING_FILE_WATCHER=1
+    ports:
+      - "5002:80"

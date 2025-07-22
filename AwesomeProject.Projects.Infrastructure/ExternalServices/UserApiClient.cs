@@ -17,7 +17,7 @@ namespace AwesomeProject.Projects.Infrastructure.ExternalServices
 
 		public async Task<UserModel?> GetUserByIdAsync(int id)
 		{
-			var response = await _httpClient.GetAsync($"Users/{id}");
+			var response = await _httpClient.GetAsync($"User/{id}");
 			response.EnsureSuccessStatusCode();
 			return await response.Content.ReadFromJsonAsync<UserModel>();
 		}
