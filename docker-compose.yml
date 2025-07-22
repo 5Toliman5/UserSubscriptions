@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: dev_postgres
+    environment:
+      POSTGRES_USER: devuser
+      POSTGRES_PASSWORD: devpass
+      POSTGRES_DB: devdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  mongo:
+    image: mongo:7
+    container_name: dev_mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodata:/data/db
+
+  projects-api:
+    build:
+      context: .
+      dockerfile: AwesomeProject.Projects.Api/Dockerfile
+    ports:
+      - "5001:80"
+    environment:
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__Default=Host=postgres;Port=5432;Database=devdb;Username=devuser;Password=devpass
+    depends_on:
+      - postgres
+
+  users-api:
+    build:
+      context: .
+      dockerfile: AwesomeProject.Users.Api/Dockerfile
+    ports:
+      - "5002:80"
+    environment:
+      - ASPNETCORE_URLS=http://+:80
+      - MongoDbSettings__ConnectionString=mongodb://mongo:27017
+      - MongoDbSettings__DatabaseName=MyAppDb
+    depends_on:
+      - mongo
+
+volumes:
+  pgdata:
+  mongodata:
